@@ -5,23 +5,6 @@
 #include <sys/types.h>
 #include <sys/resource.h>
 
-bool validate_command(int argc, const char* argv[])
-{
-    //printf("Number of arguments: %d\n", argc);
-    
-    //for (int i = 0; i < argc; ++i)
-    //{
-        //printf("Argument: %s\n", argv[i]);
-    //}
-    
-    //if (strcmp(command, "ls\n"))
-    //{
-        return true;
-    //}
-    
-    //return false;
-}
-
 void execute_command(const char* command, const char* options, const char* arguments)
 {
     struct rusage resource_usage;
@@ -57,28 +40,19 @@ void execute_command(const char* command, const char* options, const char* argum
         if (status == 0)
         {
             getrusage(RUSAGE_SELF, &resource_usage);
-        
-            //printf("Child. Command status: %d\n", status);
-            printf("Page Faults: %d\n", resource_usage.ru_majflt);
-            // TODO: print more statistics.
+			
+            printf("User time used: %d\n"
+				"System time used: %d\n"
+				"Number of involuntary context switch: %d\n"
+				"Number of voluntary context switch: %d\n"
+				"Page Faults: %d\n"
+				"Page Reclaims: %d\n", resource_usage.ru_utime, resource_usage.ru_stime, resource_usage.ru_nivcsw, resource_usage.ru_nvcsw, resource_usage.ru_majflt, resource_usage.ru_minflt);
         }
-        
-        //printf("Parent. Child status: %d\n", status);
     }
 }
 
 int main(int argc, char* argv[])
 {
-    if (validate_command(argc, argv))
-    {
-        //printf("Valid command.\n");
-        execute_command(argv[1], argv[2], argv[3]);
-    }
-    
-    else
-    {
-        printf("Invalid command.\n");
-    } 
-    
+    execute_command(argv[1], argv[2], argv[3]); 
     return 0;
 }
