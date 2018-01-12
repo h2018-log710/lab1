@@ -4,10 +4,11 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/resource.h>
+#include <sys/wait.h>
 
 #include "main.h"
 
-void execute_command(const char* command, const char* options, const char* arguments)
+void execute_command(char* command, char* options, char* arguments)
 {
     struct rusage resource_usage;
     pid_t pid = fork();
@@ -43,12 +44,12 @@ void execute_command(const char* command, const char* options, const char* argum
         {
             getrusage(RUSAGE_SELF, &resource_usage);
 			
-            printf("User time used: %d\n"
-				"System time used: %d\n"
-				"Number of involuntary context switch: %d\n"
-				"Number of voluntary context switch: %d\n"
-				"Page Faults: %d\n"
-				"Page Reclaims: %d\n", resource_usage.ru_utime, resource_usage.ru_stime, resource_usage.ru_nivcsw, resource_usage.ru_nvcsw, resource_usage.ru_majflt, resource_usage.ru_minflt);
+            printf("User time used: %lds\n"
+				"System time used: %lds\n"
+				"Number of involuntary context switch: %ld\n"
+				"Number of voluntary context switch: %ld\n"
+				"Page Faults: %ld\n"
+				"Page Reclaims: %ld\n", resource_usage.ru_utime.tv_sec, resource_usage.ru_stime.tv_sec, resource_usage.ru_nivcsw, resource_usage.ru_nvcsw, resource_usage.ru_majflt, resource_usage.ru_minflt);
         }
     }
 }
@@ -58,7 +59,7 @@ int main(int argc, char* argv[])
 	while (true)
 	{
 		char input[255];
-		printf("Log710H2018%>");
+		printf("Log710H2018%%>");
 		fgets(input, 255, stdin);
 		
 		execute_command(argv[1], argv[2], argv[3]); 

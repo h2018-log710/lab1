@@ -1,7 +1,9 @@
 CC=gcc
 CFLAGS=-Wall -g 
 LDFLAGS=
+LDLIBS=
 TARGET=prompt
+VPATH=src
 ODIR=obj
 BINDIR=bin
 
