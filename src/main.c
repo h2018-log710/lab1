@@ -55,6 +55,14 @@ void execute_command(const char* command, const char* options, const char* argum
 
 int main(int argc, char* argv[])
 {
-    execute_command(argv[1], argv[2], argv[3]); 
+	while (true)
+	{
+		char input[255];
+		printf("Log710H2018%>");
+		fgets(input, 255, stdin);
+		
+		execute_command(argv[1], argv[2], argv[3]); 
+	}
+	
     return 0;
 }
