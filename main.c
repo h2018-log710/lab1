@@ -5,6 +5,8 @@
 #include <sys/types.h>
 #include <sys/resource.h>
 
+#include "main.h"
+
 void execute_command(const char* command, const char* options, const char* arguments)
 {
     struct rusage resource_usage;
