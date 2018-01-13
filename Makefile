@@ -19,3 +19,5 @@ command.o: command.h
 clean:
 	rm $(objects) $(BINDIR)/$(TARGET)
 
+run:
+	./$(BINDIR)/$(TARGET)
