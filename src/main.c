@@ -5,10 +5,13 @@
 
 int main(int argc, char* argv[])
 {
-    if(argc > 1) {
+    if (argc > 1)
+    {
         return execute_command(argc-1, &argv[1]);
     }
-    else {
+    
+    else
+    {
         printf("USAGE: %s [cmd]\n", argv[0]);
     }
 }
