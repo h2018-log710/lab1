@@ -11,6 +11,8 @@ typedef struct job
 
 extern job* last_job;
 
+job* create_job_entry(pid_t pid);
+void cleanup_jobs();
 void list_jobs(const job* job);
 int get_job_count();
 

@@ -82,30 +82,11 @@ int execute_command(int argc, char* argv[])
         
 		else
 		{
-			job* new_job = (job*) malloc(sizeof(job));
-			
-			new_job->pid = pid;
-			new_job->next = NULL;
-			
-			if (last_job == NULL)
-			{
-				new_job->job_id = 0;
-				new_job->previous = NULL;
-			}
-			
-			else
-			{
-				new_job->job_id = last_job->job_id + 1;
-				new_job->previous = last_job;
-				
-				last_job->next = new_job;
-			}
-			
-			last_job = new_job;
+            job* new_job = create_job_entry(pid);
 			
 			printf("=======================================\n");
-			printf("Job ID: %d\n", last_job->job_id);
-			printf("PID: %d\n", last_job->pid);
+			printf("Job ID: %d\n", new_job->job_id);
+			printf("PID: %d\n", new_job->pid);
 			printf("=======================================\n");
 		}
     }
