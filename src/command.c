@@ -68,6 +68,8 @@ void execute_command(char* command, char* options, char* arguments)
 }
 
 /**
+    This function execute a builtin, or do nothing if command is not a builtin
+
     int argc      the argument count
     char* argv[]  the argument value
     return  0 if command is a builtin,
@@ -76,12 +78,6 @@ void execute_command(char* command, char* options, char* arguments)
 */
 int execute_builtin(int argc, char* argv[])
 {
-    printf("argc = %d\n", argc);
-    for(int i=0; i<argc; i++)
-    {
-        printf("%d: %s \n", i, argv[i]);
-    }
-
     if(strcmp(argv[0], "exit") == 0)
     {
         int exit_val = (argc == 1) ? 0 : strtol(argv[1], NULL, 10);
