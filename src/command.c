@@ -34,7 +34,6 @@ int execute_command(int argc, char* argv[])
     struct rusage resource_usage;
     struct timeval start_time, end_time;
     bool is_background = strchr(argv[argc - 1], '&') != NULL;
-    printf("%d\n", is_background);
     
     getrusage(RUSAGE_CHILDREN, &resource_usage);
     gettimeofday(&start_time, NULL);
@@ -48,6 +47,11 @@ int execute_command(int argc, char* argv[])
     
     else if (pid == 0)
     {
+		if (is_background)
+		{
+			argv[argc - 1] = NULL;
+		}
+		
         if (execvp(argv[0], argv) == -1)
         {
             printf("Failed to exec.\n");
@@ -107,6 +111,11 @@ int execute_command(int argc, char* argv[])
 			}
 			
 			last_job = new_job;
+			
+			printf("=======================================\n");
+			printf("Job ID: %d\n", last_job->job_id);
+			printf("PID: %d\n", last_job->pid);
+			printf("=======================================\n");
 		}
     }
 	
