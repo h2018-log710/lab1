@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <unistd.h>
 #include <time.h>
 #include <sys/types.h>
@@ -10,6 +11,16 @@
 
 #include "command.h"
 #include "jobs.h"
+
+typedef struct job
+{
+    pid_t pid;
+    int job_id;
+    struct job* previous;
+    struct job* next;
+} job;
+
+job* last_job = NULL;
 
 /**
     This function execute a command
@@ -23,11 +34,13 @@ int execute_command(int argc, char* argv[])
 {
     struct rusage resource_usage;
     struct timeval start_time, end_time;
-
+    bool is_background = strchr(argv[argc - 1], '&') != NULL;
+    printf("%d\n", is_background);
+    
     getrusage(RUSAGE_CHILDREN, &resource_usage);
     gettimeofday(&start_time, NULL);
-	pid_t pid = fork();
-	
+    pid_t pid = fork();
+    
     if (pid == -1)
     {
         printf("Failed to fork.\n");
@@ -38,7 +51,7 @@ int execute_command(int argc, char* argv[])
     {
         if (execvp(argv[0], argv) == -1)
         {
-			printf("Failed to exec.\n");
+            printf("Failed to exec.\n");
             return -1;
         }
     }
@@ -46,28 +59,56 @@ int execute_command(int argc, char* argv[])
     else
     {
         int status = 0;
-		
-        waitpid(pid, &status, 0);
-		getrusage(RUSAGE_CHILDREN, &resource_usage);
-		gettimeofday(&end_time, NULL);
-		
-		// Calculate the wall-clock time and the cpu time.
-		long wall_clock_time = ((end_time.tv_sec - start_time.tv_sec) * 1000000 + end_time.tv_usec - start_time.tv_usec) / 1000;
-		long cpu_time = (resource_usage.ru_utime.tv_sec + resource_usage.ru_stime.tv_sec) * 1000 + (resource_usage.ru_utime.tv_usec + resource_usage.ru_stime.tv_usec) / 1000;
-		
-		printf("=======================================\n");
-		printf("Wall-clock time: %ldms\n", wall_clock_time);
-		printf("CPU time: %ldms\n", cpu_time);
-		printf("Number of involuntary context switch: %ld\n", resource_usage.ru_nivcsw);
-		printf("Number of voluntary context switch: %ld\n", resource_usage.ru_nvcsw);
-		printf("Page faults: %ld\n", resource_usage.ru_majflt);
-		printf("Page reclaims: %ld\n", resource_usage.ru_minflt);
-		printf("=======================================\n");
-		
-		if (status != 0)
+        
+        if (!is_background)
         {
-			printf("Child exited with status: %d\n", status);
-        }
+            waitpid(pid, &status, 0);
+            
+			getrusage(RUSAGE_CHILDREN, &resource_usage);
+			gettimeofday(&end_time, NULL);
+			
+			// Calculate the wall-clock time and the cpu time.
+			long wall_clock_time = ((end_time.tv_sec - start_time.tv_sec) * 1000000 + end_time.tv_usec - start_time.tv_usec) / 1000;
+			long cpu_time = (resource_usage.ru_utime.tv_sec + resource_usage.ru_stime.tv_sec) * 1000 + (resource_usage.ru_utime.tv_usec + resource_usage.ru_stime.tv_usec) / 1000;
+			
+			printf("=======================================\n");
+			printf("Wall-clock time: %ldms\n", wall_clock_time);
+			printf("CPU time: %ldms\n", cpu_time);
+			printf("Number of involuntary context switch: %ld\n", resource_usage.ru_nivcsw);
+			printf("Number of voluntary context switch: %ld\n", resource_usage.ru_nvcsw);
+			printf("Page faults: %ld\n", resource_usage.ru_majflt);
+			printf("Page reclaims: %ld\n", resource_usage.ru_minflt);
+			printf("=======================================\n");
+			
+			if (status != 0)
+			{
+				printf("Child exited with status: %d\n", status);
+			}
+		}
+        
+		else
+		{
+			job* new_job = (job*) malloc(sizeof(job));
+			
+			new_job->pid = pid;
+			new_job->next = NULL;
+			
+			if (last_job == NULL)
+			{
+				new_job->job_id = 0;
+				new_job->previous = NULL;
+			}
+			
+			else
+			{
+				new_job->job_id = last_job->job_id + 1;
+				new_job->previous = last_job;
+				
+				last_job->next = new_job;
+			}
+			
+			last_job = new_job;
+		}
     }
 	
 	return 0;
