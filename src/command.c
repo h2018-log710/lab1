@@ -10,7 +10,15 @@
 
 #include "command.h"
 
-void execute_command(int argc, char* argv[])
+/**
+    This function execute a command
+
+    int argc      the argument count
+    char* argv[]  the argument value
+    return  0 if the process was successfully created,
+            -1 if the process failed to be created
+*/
+int execute_command(int argc, char* argv[])
 {
     struct rusage resource_usage;
     struct timeval start_time, end_time;
@@ -22,7 +30,7 @@ void execute_command(int argc, char* argv[])
     if (pid == -1)
     {
         printf("Failed to fork.\n");
-        return;
+        return -1;
     }
     
     else if (pid == 0)
@@ -30,7 +38,7 @@ void execute_command(int argc, char* argv[])
         if (execvp(argv[0], argv) == -1)
         {
 			printf("Failed to exec.\n");
-            return;
+            return -1;
         }
     }
     
@@ -60,6 +68,8 @@ void execute_command(int argc, char* argv[])
 			printf("Child exited with status: %d\n", status);
         }
     }
+	
+	return 0;
 }
 
 /**
@@ -73,15 +83,17 @@ void execute_command(int argc, char* argv[])
 */
 int execute_builtin(int argc, char* argv[])
 {
-    if(strcmp(argv[0], "exit") == 0)
+    if (strcmp(argv[0], "exit") == 0)
     {
         int exit_val = (argc == 1) ? 0 : strtol(argv[1], NULL, 10);
         exit(exit_val);
     }
+	
     else if (strcmp(argv[0], "cd") == 0)
     {
-        char *path = (argc == 1) ? "." : argv[1];
+        char* path = (argc == 1) ? "." : argv[1];
         return chdir(path);
     }
+	
     return 1;
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <errno.h>
 
 #include "command.h"
 
@@ -27,7 +28,21 @@ int main(int argc, char* argv[])
 			arguments[count - 1] = strtok(arguments[count - 1], "\n");
 			arguments[count] = NULL; // The last argument should be null when using execvp.
 			
-			execute_command(count, arguments);
+			switch (execute_builtin(count, arguments))
+			{
+				// Not a builtin, try to execute the command.
+				case 1:
+					if (execute_command(count, arguments) == 0)
+					{
+						break; // The command was executed successfully. No need to print an error.
+					}
+				case -1:
+					printf("%s\n", strerror(errno));
+					break;
+				default:
+					// Nothing should be done.
+					break;
+			}
 		}
 	}
 	
