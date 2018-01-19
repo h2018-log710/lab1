@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 
 #include "command.h"
+#include "jobs.h"
 
 /**
     This function execute a command
@@ -93,6 +94,12 @@ int execute_builtin(int argc, char* argv[])
     {
         char* path = (argc == 1) ? "." : argv[1];
         return chdir(path);
+    }
+
+    else if (strcmp(argv[0], "aptaches") == 0)
+    {
+        list_jobs(last_job);
+        return 0;
     }
 	
     return 1;
