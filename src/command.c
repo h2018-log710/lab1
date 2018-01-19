@@ -9,7 +9,7 @@
 
 #include "command.h"
 
-void execute_command(char* command, char* options, char* arguments)
+void execute_command(int argc, char* argv[])
 {
     struct rusage resource_usage;
     struct timeval start_time, end_time;
@@ -28,9 +28,9 @@ void execute_command(char* command, char* options, char* arguments)
     {
         char* args[4];
         
-        args[0] = command;
-        args[1] = options;
-        args[2] = arguments;
+        args[0] = NULL;//command;
+        args[1] = NULL;//options;
+        args[2] = NULL;//arguments;
         args[3] = NULL;
         
         if (execvp(args[0], args) == -1)
