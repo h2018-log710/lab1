@@ -9,7 +9,14 @@
 
 #include "command.h"
 
-void execute_command(char* command, char* options, char* arguments)
+/**
+    This function execute a command
+    int argc      the argument count
+    char* argv[]  the argument value
+    return  0 if the process was successfully created,
+            -1 if the process failed to be created
+*/
+int execute_command(int argc, char* argv[])
 {
     struct rusage resource_usage;
     struct timeval start_time, end_time;
@@ -21,22 +28,15 @@ void execute_command(char* command, char* options, char* arguments)
     if (pid == -1)
     {
         printf("Failed to fork.\n");
-        return;
+        return -1;
     }
     
     else if (pid == 0)
     {
-        char* args[4];
-        
-        args[0] = command;
-        args[1] = options;
-        args[2] = arguments;
-        args[3] = NULL;
-        
-        if (execvp(args[0], args) == -1)
+        if (execvp(argv[0], argv) == -1)
         {
 			printf("Failed to exec.\n");
-            return;
+            return -1;
         }
     }
     
@@ -52,16 +52,20 @@ void execute_command(char* command, char* options, char* arguments)
 		long wall_clock_time = ((end_time.tv_sec - start_time.tv_sec) * 1000000 + end_time.tv_usec - start_time.tv_usec) / 1000;
 		long cpu_time = (resource_usage.ru_utime.tv_sec + resource_usage.ru_stime.tv_sec) * 1000 + (resource_usage.ru_utime.tv_usec + resource_usage.ru_stime.tv_usec) / 1000;
 		
+		printf("=======================================\n");
 		printf("Wall-clock time: %ldms\n", wall_clock_time);
 		printf("CPU time: %ldms\n", cpu_time);
 		printf("Number of involuntary context switch: %ld\n", resource_usage.ru_nivcsw);
 		printf("Number of voluntary context switch: %ld\n", resource_usage.ru_nvcsw);
 		printf("Page faults: %ld\n", resource_usage.ru_majflt);
 		printf("Page reclaims: %ld\n", resource_usage.ru_minflt);
+		printf("=======================================\n");
 		
 		if (status != 0)
         {
 			printf("Child exited with status: %d\n", status);
         }
     }
+	
+	return 0;
 }
