@@ -12,15 +12,14 @@ int main(int argc, char* argv[])
 		printf("Log710H2018%%>");
 		fgets(input, 255, stdin);
 		
-		char* output = strtok(input, " ");
 		char* arguments[255];
 		int count = 0;
+		char* output = strtok(input, " ");
 		
 		while (output != NULL)
 		{
-			printf("Output: %s", output);
 			arguments[count++] = output;
-			output = strtok(input, " ");
+			output = strtok(NULL, " ");
 		}
 		
 		execute_command(count, arguments);
