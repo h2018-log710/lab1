@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
@@ -64,4 +65,32 @@ void execute_command(char* command, char* options, char* arguments)
 			printf("Child exited with status: %d\n", status);
         }
     }
+}
+
+/**
+    int argc      the argument count
+    char* argv[]  the argument value
+    return  0 if command is a builtin,
+            -1 if the command is a builtin, but an error occured
+            1  if the command is not a builtin
+*/
+int execute_builtin(int argc, char* argv[])
+{
+    printf("argc = %d\n", argc);
+    for(int i=0; i<argc; i++)
+    {
+        printf("%d: %s \n", i, argv[i]);
+    }
+
+    if(strcmp(argv[0], "exit") == 0)
+    {
+        int exit_val = (argc == 1) ? 0 : strtol(argv[1], NULL, 10);
+        exit(exit_val);
+    }
+    else if (strcmp(argv[0], "cd") == 0)
+    {
+        char *path = (argc == 1) ? "." : argv[1];
+        return chdir(path);
+    }
+    return 1;
 }
