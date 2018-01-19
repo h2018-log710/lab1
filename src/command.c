@@ -14,12 +14,12 @@
 typedef struct job
 {
     pid_t pid;
-	int job_id;
-	struct job* previous;
-	struct job* next;
+    int job_id;
+    struct job* previous;
+    struct job* next;
 } job;
 
-job* last_job;
+job* last_job = NULL;
 
 /**
     This function execute a command
@@ -33,13 +33,13 @@ int execute_command(int argc, char* argv[])
 {
     struct rusage resource_usage;
     struct timeval start_time, end_time;
-	bool is_background = strchr(argv[argc], '&') != NULL;
-	printf("%d\n", is_background);
-	
+    bool is_background = strchr(argv[argc - 1], '&') != NULL;
+    printf("%d\n", is_background);
+    
     getrusage(RUSAGE_CHILDREN, &resource_usage);
     gettimeofday(&start_time, NULL);
-	pid_t pid = fork();
-	
+    pid_t pid = fork();
+    
     if (pid == -1)
     {
         printf("Failed to fork.\n");
@@ -50,7 +50,7 @@ int execute_command(int argc, char* argv[])
     {
         if (execvp(argv[0], argv) == -1)
         {
-			printf("Failed to exec.\n");
+            printf("Failed to exec.\n");
             return -1;
         }
     }
@@ -58,11 +58,11 @@ int execute_command(int argc, char* argv[])
     else
     {
         int status = 0;
-		
-		if (!is_background)
-		{
-			waitpid(pid, &status, 0);
-			
+        
+        if (!is_background)
+        {
+            waitpid(pid, &status, 0);
+            
 			getrusage(RUSAGE_CHILDREN, &resource_usage);
 			gettimeofday(&end_time, NULL);
 			
