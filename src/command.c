@@ -10,17 +10,7 @@
 #include <sys/wait.h>
 
 #include "command.h"
-#include "jobs.h"
-
-typedef struct job
-{
-    pid_t pid;
-    int job_id;
-    struct job* previous;
-    struct job* next;
-} job;
-
-job* last_job = NULL;
+#include "job.h"
 
 /**
     This function execute a command
