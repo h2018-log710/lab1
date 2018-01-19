@@ -12,5 +12,6 @@ typedef struct job
 extern job* last_job;
 
 void list_jobs(const job* job);
+int get_job_count();
 
 #endif

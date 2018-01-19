@@ -117,8 +117,17 @@ int execute_builtin(int argc, char* argv[])
 {
     if (strcmp(argv[0], "exit") == 0)
     {
-        int exit_val = (argc == 1) ? 0 : strtol(argv[1], NULL, 10);
-        exit(exit_val);
+        int job_count = get_job_count();
+        if (job_count != 0)
+        {
+            printf("There are %d background jobs running.\n", job_count);
+            return 0;
+        }
+        else
+        {
+            int exit_val = (argc == 1) ? 0 : strtol(argv[1], NULL, 10);
+            exit(exit_val);
+        }
     }
 	
     else if (strcmp(argv[0], "cd") == 0)
