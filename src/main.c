@@ -4,6 +4,7 @@
 #include <errno.h>
 
 #include "command.h"
+#include "job.h"
 
 int main(int argc, char* argv[])
 {
@@ -28,6 +29,8 @@ int main(int argc, char* argv[])
 			arguments[count - 1] = strtok(arguments[count - 1], "\n");
 			arguments[count] = NULL; // The last argument should be null when using execvp.
 			
+            cleanup_finished_jobs();
+
 			switch (execute_builtin(count, arguments))
 			{
 				// Not a builtin, try to execute the command.

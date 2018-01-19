@@ -82,7 +82,7 @@ int execute_command(int argc, char* argv[])
         
 		else
 		{
-            job* new_job = create_job_entry(pid);
+            job* new_job = create_job_entry(pid, argv[0]);
 			
 			printf("=======================================\n");
 			printf("Job ID: %d\n", new_job->job_id);

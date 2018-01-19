@@ -1,13 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "job.h"
 
 job* last_job = NULL;
 
-job* create_job_entry(pid_t pid)
+job* create_job_entry(pid_t pid, char* job_name)
 {
 	job* new_job = (job*) malloc(sizeof(job));
+
+    strcpy(new_job->job_name, job_name);
 			
 	new_job->pid = pid;
 	new_job->next = NULL;
@@ -31,28 +36,58 @@ job* create_job_entry(pid_t pid)
     return new_job;
 }
 
-void cleanup_jobs()
+void cleanup_finished_jobs()
 {
     job* job_ptr = last_job;
     while (job_ptr != NULL)
     {
-        job_ptr = job_ptr->previous;
+        job* next_job = job_ptr->next;
+        job* previous_job = job_ptr->previous;
+
+        if (waitpid(job_ptr->pid, NULL, WNOHANG) > 0)
+        {
+            if (previous_job == NULL && next_job == NULL)
+            {
+                // No more jobs
+                last_job = NULL;
+            }
+
+            if (previous_job != NULL)
+            {
+                previous_job->next = next_job;
+            }
+
+            if (next_job != NULL)
+            {
+                next_job->previous = previous_job;
+            }
+
+            if (job_ptr == last_job)
+            {
+                // The job we removed from list was the last_job, the previous job is the new last_job
+                last_job = previous_job;
+            }
+
+            free(job_ptr);
+            job_ptr = NULL;
+        }
+        job_ptr = previous_job;
     }
 }
 
-void list_jobs(const job* job)
+void list_jobs(const job* job_ptr)
 {
-    if (job == NULL)
+    if (job_ptr == NULL)
     {
-        printf("No background jobs.\n");
+        printf("No background jobs.\nls");
         return;
     }
 
-    if (job->previous != NULL)
+    if (job_ptr->previous != NULL)
     {
-        list_jobs(job->previous);
+        list_jobs(job_ptr->previous);
     }
-    printf("[%d] %d\n", job->job_id, job->pid);
+    printf("[%d] %d %s\n", job_ptr->job_id, job_ptr->pid, job_ptr->job_name);
 }
 
 int get_job_count()
