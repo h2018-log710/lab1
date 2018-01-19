@@ -12,8 +12,8 @@ int main(int argc, char* argv[])
 		printf("Log710H2018%%>");
 		fgets(input, 255, stdin);
 		
-		char* arguments[255];
 		int count = 0;
+		char* arguments[255];
 		char* output = strtok(input, " ");
 		
 		while (output != NULL)
