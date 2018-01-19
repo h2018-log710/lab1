@@ -26,14 +26,7 @@ void execute_command(int argc, char* argv[])
     
     else if (pid == 0)
     {
-        char* args[4];
-        
-        args[0] = NULL;//command;
-        args[1] = NULL;//options;
-        args[2] = NULL;//arguments;
-        args[3] = NULL;
-        
-        if (execvp(args[0], args) == -1)
+        if (execvp(argv[0], argv) == -1)
         {
 			printf("Failed to exec.\n");
             return;
@@ -52,12 +45,14 @@ void execute_command(int argc, char* argv[])
 		long wall_clock_time = ((end_time.tv_sec - start_time.tv_sec) * 1000000 + end_time.tv_usec - start_time.tv_usec) / 1000;
 		long cpu_time = (resource_usage.ru_utime.tv_sec + resource_usage.ru_stime.tv_sec) * 1000 + (resource_usage.ru_utime.tv_usec + resource_usage.ru_stime.tv_usec) / 1000;
 		
+		printf("=======================================\n");
 		printf("Wall-clock time: %ldms\n", wall_clock_time);
 		printf("CPU time: %ldms\n", cpu_time);
 		printf("Number of involuntary context switch: %ld\n", resource_usage.ru_nivcsw);
 		printf("Number of voluntary context switch: %ld\n", resource_usage.ru_nvcsw);
 		printf("Page faults: %ld\n", resource_usage.ru_majflt);
 		printf("Page reclaims: %ld\n", resource_usage.ru_minflt);
+		printf("=======================================\n");
 		
 		if (status != 0)
         {
