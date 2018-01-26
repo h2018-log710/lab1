@@ -44,7 +44,7 @@ void cleanup_finished_jobs()
         job* next_job = job_ptr->next;
         job* previous_job = job_ptr->previous;
 
-        if (waitpid(job_ptr->pid, NULL, WNOHANG) > 0)
+        if (waitpid(job_ptr->pid, NULL, WNOHANG) != 0)
         {
             if (previous_job == NULL && next_job == NULL)
             {

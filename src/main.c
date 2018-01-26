@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <signal.h>
 #include <errno.h>
 
 #include "command.h"
@@ -8,6 +9,9 @@
 
 int main(int argc, char* argv[])
 {
+	// Ignore SIGCHLD to avoid them becoming zombies
+	signal(SIGCHLD, SIG_IGN);
+
 	while (true)
 	{
 		char input[255];
@@ -28,8 +32,8 @@ int main(int argc, char* argv[])
 			
 			arguments[count - 1] = strtok(arguments[count - 1], "\n");
 			arguments[count] = NULL; // The last argument should be null when using execvp.
-			
-            cleanup_finished_jobs();
+
+			cleanup_finished_jobs();
 
 			switch (execute_builtin(count, arguments))
 			{

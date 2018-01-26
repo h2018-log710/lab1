@@ -46,7 +46,7 @@ int execute_command(int argc, char* argv[])
         if (execvp(argv[0], argv) == -1)
         {
             printf("Failed to exec.\n");
-            return -1;
+            exit(-1);
         }
     }
     
